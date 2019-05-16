@@ -54,4 +54,5 @@ func (user *User) LoginPost(w http.ResponseWriter, r *http.Request, _ httprouter
 	fmt.Println(err)
 	user.Name = r.PostFormValue("User")
 	user.Password = r.PostFormValue("Pass")
+
 }
