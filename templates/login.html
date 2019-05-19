@@ -46,9 +46,29 @@ html, body, .container {
         overflow:auto;
         vertical-align:middle;
     }
+
+    img{
+    	width: 200px;
+    	height: 200px;
+    }
+
+    button {;
+    	/** border-radius: 12px; **/
+    	border-color: #4CAF50;
+    	background-color:#4CAF50; 
+    	padding: 10px;
+    }
 </style> 
 <!DOCTYPE html>
+<html>
+<head>
+	 <meta charset="UTF-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 <title> Attendance Login</title>
+
+</head>
     <body>
+<<<<<<< HEAD
             <div class="content">
         <span>
             <form action="/login" method="POST">
@@ -60,6 +80,18 @@ html, body, .container {
                 <p style="color:red;">This password does not match</p>
                 {{end}}
             </form>
+=======
+        <form action="/login/" method="POST" align = "center">
+            <div class="content">
+        <span>
+
+        	    <img src="unilag-logo.jpg">
+                <input placeholder="Enter Username" type="text" name= "User" ><br>
+                <br>
+                <input placeholder="Enter Password"  type="password" name="Pass"><br>
+                <br>
+                <button id="request"> Enter </button> 
+>>>>>>> 06a198a8a6645010abe74a5cd3f40832b76647be
         </span>
             </div>
     </body>
