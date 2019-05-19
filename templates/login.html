@@ -46,15 +46,38 @@ html, body, .container {
         overflow:auto;
         vertical-align:middle;
     }
+
+    img{
+    	width: 200px;
+    	height: 200px;
+    }
+
+    button {;
+    	/** border-radius: 12px; **/
+    	border-color: #4CAF50;
+    	background-color:#4CAF50; 
+    	padding: 10px;
+    }
 </style> 
 <!DOCTYPE html>
+<html>
+<head>
+	 <meta charset="UTF-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 <title> Attendance Login</title>
+
+</head>
     <body>
-        <form action="/login/" method="POST">
+        <form action="/login/" method="POST" align = "center">
             <div class="content">
         <span>
-                Name: <input type="text" name= "User" ><br>
-                Password: <input type="password" name="Pass"><br>
-                <button id="request">hello</button> 
+
+        	    <img src="unilag-logo.jpg">
+                <input placeholder="Enter Username" type="text" name= "User" ><br>
+                <br>
+                <input placeholder="Enter Password"  type="password" name="Pass"><br>
+                <br>
+                <button id="request"> Enter </button> 
         </span>
             </div>
         </form>
