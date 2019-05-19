@@ -1,0 +1,73 @@
+
+{{define "admin"}}
+<!DOCTYPE html>
+<html>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="description" content="Attendance By FingerPrint">
+    <meta name="autdor" content="Group 8 EEG 401">
+    <meta name="viewport" content="widtd=device-widtd, initial-scale=1, shrink-to-fit=no">  
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="bootstrap4/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="row justify-content-end">
+            <div class="col-2">
+                <a href="/changePass" class="btn btn-link">Change Password</a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <div class="row pt-4 pb-5 mx-0">
+                    <div class="col-12">
+
+                        <p class="py-0 mb-2 font-weight-bold">STUDENT ENROLLMENT PAGE</p>
+
+                        <form id="addstudent" method="POST" action="/enroll">
+                            <div class="table-responsive" id="coursetable">
+                                <table class="table table-bordered text-nowrap">
+                                    <tdead class="tdead-dark">
+                                        <tr class="">
+                                            <td>Matric</td>
+                                            <td>Name</td>
+                                            <td>Level</td>
+                                            <td>FingerPrint Checked</td>
+                                        </tr>
+                                    </tdead>    
+                                    <tbody id="tablebody">
+                                        <tr>
+                                            <td><input type="text" required="" class="form-control border-0 m-0" name="matric_1"></td>
+                                            <td><input type="text" required="" class="form-control border-0 m-0" name="name_1"></td>
+                                            <td><input type="text" required="" class="form-control border-0 m-0" name="level_1"></td>
+                                            <td><input type="text" required="" class="form-control border-0 m-0" name="finger_1" placeholder="NO"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a href="#" class="btn btn-link" id="add">ADD A STUDENT</a>
+                            </div>
+                            <input type="submit" value="Submit Enrollment" class="btn btn-link font-weight-bold">
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script>
+      var i = 2
+        $('#add').click(function(){
+            
+           var myappend = '<tr><td><input type="text" required="" class="form-control border-0 m-0" name="matric_' + i + '"></td><td><input type="text" required="" class="form-control border-0 m-0" name="name_' + i + '"></td><td><input type="text" required="" class="form-control border-0 m-0" name="level_' + i + '"></td><td><input type="text" required="" class="form-control border-0 m-0" name=finger_' + i + '"" placeholder="NO"></td></tr>'
+            $('#tablebody').append(myappend);
+            i++;
+        })
+    </script>
+</body>
+</html>
+{{end}}

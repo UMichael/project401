@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="description" content="Attendance By FingerPrint">
+    <meta name="autdor" content="Group 8 EEG 401">
+    <meta name="viewport" content="widtd=device-widtd, initial-scale=1, shrink-to-fit=no">  
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="bootstrap4/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="row justify-content-end">
+            <div class="col-2">
+                <a href="#" class="btn btn-link">Change Password</a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <div class="row pt-4 pb-5 mx-0">
+                    <div class="col-12">
+
+                        <p class="py-0 mb-2">Click tde S/N column to see details</p>
+
+                        <div class="table-responsive" id="coursetable">
+                            <table class="table table-bordered text-nowrap">
+                                <tdead class="tdead-dark">
+                                    <tr class="">
+                                        <td>S/N</td>
+                                        <td>Name</td>
+                                        <td>Class 1</td>
+                                        <td>Class 2</td>
+                                        <td>Class 3</td>
+                                    </tr>
+                                </tdead>    
+                                <tbody id="tablebody">
+                                    <tr>
+                                        <td>1</td>
+                                        <td><input type="text" class="form-control border-0 m-0" name="name_1"></td>
+                                        <td><input type="text" class="form-control border-0 m-0" name="class1_1"></td>
+                                        <td><input type="text" class="form-control border-0 m-0" name="class2_1"></td>
+                                        <td><input type="text" class="form-control border-0 m-0" name="class3_1"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a href="#" class="btn btn-link" id="add">ADD A STUDENT</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script>
+        var i = 2
+        $('#add').click(function(){
+            
+            var myappend = '<tr><td>' + i + '</td><td><input type="text" class="form-control border-0 m-0" name="name_' + i + '"></td><td><input type="text" class="form-control border-0 m-0" name="class1_' + i + '"></td><td><input type="text" class="form-control border-0 m-0" name="class2_' + i + '"></td><td><input type="text" class="form-control border-0 m-0" name=class3_' + i + '""></td></tr>'
+            $('#tablebody').append(myappend);
+            i++;
+        })
+    </script>
+</body>
+
+
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+    <body>
+            <div class="content">
+        <span>
+            <form action="/changePass" method="POST">
+                Name:<br> <input type="text" name="name"><br>
+                Old Password: <input type="password" name= "oldPass" ><br>
+                Password: <input type="password" name="newPass"><br>
+                <button id="request">change</button>
+            </form>
+            {{if .Login.BadDetail}}
+            <p style="color:red;">The detail provided is incorrect</p>
+            {{else if .Login.Success}}
+            <p style="color:lightblue;">Password changed successfully</p>
+            {{end}}
+        </span>
+            </div>
+    </body>
+</html>
