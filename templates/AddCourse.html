@@ -2,18 +2,13 @@
     <body>
             <div class="content">
         <span>
-            <form action="/changePass" method="POST" align="center">
-            Name: <input type="text" name="name"><br>
-            Password: <input type="password" placeholder="Password" required="" name= "oldPass"><br>
+            <form action="/addcourse" method="POST" align="center">
+            Full Name: <input type="text" name="name"><br>
+            Course Code: <input type="text" name="course"><br>
+            Password: <input type="password" placeholder="Password" required="" name= "Pass"><br>
             Confirm Password: <input type="password" placeholder="Confirm Password"  required=""> <br>
 
             <button type="submit">Confirm</button>
-
-             {{if .Login.BadDetail}}
-             <p style="color:red;">The detail provided is incorrect</p>
-             {{else if .Login.Success}}
-             <p style="color:lightblue;">Password changed successfully</p>
-            {{end}}
 
              <script type="text/javascript">
                // JavaScript Code

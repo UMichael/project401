@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/asdine/storm"
 	"github.com/julienschmidt/httprouter"
 )
@@ -38,6 +38,21 @@ type StudentDetails struct {
 	Level          string `storm:"index"`
 	FingersChecked string
 }
+type CourseDetails struct {
+	ID         int `storm:"increment"`
+	Name       string
+	CourseCode string
+	Password   string
+}
+type LecturerDetails struct {
+	ID         int `storm:"increment"`
+	Password   string
+	Name       string
+	CourseCode string `storm:"unique"`
+	//Students   []StudentDetails `storm:"inline"`
+}
+
+var StudentDb, studentOfferingCourses, lecturerDB *storm.DB
 
 func init() {
 	StormDb, err = storm.Open(".LoginDetail")
@@ -49,9 +64,13 @@ func init() {
 		Name:     "admin",
 		Password: "admin",
 	})
+	StudentDb, err = storm.Open(".StudentDetails")
 	var data []Database
 	StormDb.All(&data)
 	fmt.Println(data)
+	lecturerDB, err = storm.Open(".lecturerDb")
+	studentOfferingCourses, err = storm.Open(".courses")
+	//courseDetails, err = storm.Open(".courseDetails")
 
 	//todo also open sql database if need be
 }
@@ -160,28 +179,92 @@ func (user *User) ChangePasswordGet(w http.ResponseWriter, r *http.Request, _ ht
 
 func (user *User) AdminEnroll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	r.ParseForm()
-
-	data, err := goquery.NewDocumentFromReader(r.Body)
+	i := 1
+	name := "name"
+	for {
+		var student StudentDetails
+		name = r.FormValue("name_" + strconv.Itoa(i))
+		if name == "" {
+			break
+		}
+		student.Name = name
+		student.Matric = r.FormValue("matric_" + strconv.Itoa(i))
+		student.Level = r.FormValue("level_" + strconv.Itoa(i))
+		student.FingersChecked = r.FormValue("finger_" + strconv.Itoa(i))
+		err := StudentDb.Save(&student)
+		if err != nil {
+			fmt.Println("error saving students", err)
+		}
+		fmt.Println(student)
+		i++
+	}
+	http.Redirect(w, r, "/", 302)
+}
+func (user *User) Students(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	var students []StudentDetails
+	err := StudentDb.AllByIndex("Level", &students)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	data.Find("tbody#tablebody").Each(func(i int, tbodyHtml *goquery.Selection) {
-		tbodyHtml.Find("tr").Each(func(j int, trHtml *goquery.Selection) {
-			var student StudentDetails
-			trHtml.Find("td").Each(func(k int, tdHtml *goquery.Selection) {
-				if k == 0 {
-					student.Matric = tdHtml.Text()
-				} else if k == 1 {
-					student.Name = tdHtml.Text()
-				} else if k == 2 {
-					student.Level = tdHtml.Text()
-				} else if k == 3 {
-					student.FingersChecked = tdHtml.Text()
-				}
-			})
-			StormDb.Save(&student)
-			fmt.Println(student)
-		})
-	})
+	fmt.Println(students)
+	templates = templates.Lookup("table.html")
+	err = templates.Execute(w, students)
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func (user *User) AddCoursePost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	r.ParseForm()
+	if user.Details.IsAdmin != true {
+		http.Redirect(w, r, "/login", 302)
+		return
+	}
+	var course LecturerDetails
+	course.Password = r.FormValue("Pass")
+	course.Name = r.FormValue("name")
+	course.CourseCode = r.FormValue("course")
+	fmt.Println(studentOfferingCourses, lecturerDB.Save(&course))
+	//todo fix error if user has registered
 	http.Redirect(w, r, "/", 302)
+}
+func (user *User) AddCourse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	if user.Details.IsAdmin != true {
+		http.Redirect(w, r, "/login", 302)
+	}
+	templates = templates.Lookup("AddCourse.html")
+	err := templates.Execute(w, user)
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func (user *User) LecturerLoginPost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	r.ParseForm()
+	var lecturer LecturerDetails
+	Code := r.FormValue("code")
+	Password := r.FormValue("Pass")
+	fmt.Println(Code, Password)
+	err := lecturerDB.One("Password", Password, &lecturer)
+	if err != nil || lecturer.CourseCode != Code {
+		user.Login.BadDetail = true
+		fmt.Println(err)
+		http.Redirect(w, r, "/lecturer", 302)
+		return
+	}
+	http.SetCookie(
+		w,
+		&http.Cookie{
+			Path: "/",
+			Name: "lecturer",
+		})
+	http.Redirect(w, r, "/", 302)
+}
+
+func (user *User) LecturerLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	templates = templates.Lookup("lecturerLogin.html")
+	err := templates.Execute(w, user)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
