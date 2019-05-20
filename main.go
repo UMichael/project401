@@ -21,6 +21,7 @@ func main() {
 	router := httprouter.New()
 	router.GET("/", user.HomePage)
 	router.POST("/changePass", user.ChangePassword)
+	router.POST("/enroll", user.AdminEnroll)
 	router.GET("/changePass", user.ChangePasswordGet)
 	router.GET("/login", LoginGet)
 	router.POST("/login", user.LoginPost)

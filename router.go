@@ -158,7 +158,7 @@ func (user *User) ChangePasswordGet(w http.ResponseWriter, r *http.Request, _ ht
 	user.Login.BadDetail = false
 }
 
-func (user *User) AdminAddStudent(r *http.Request) {
+func (user *User) AdminEnroll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	r.ParseForm()
 
 	data, err := goquery.NewDocumentFromReader(r.Body)
@@ -183,4 +183,5 @@ func (user *User) AdminAddStudent(r *http.Request) {
 			fmt.Println(student)
 		})
 	})
+	http.Redirect(w, r, "/", 302)
 }
