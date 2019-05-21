@@ -1,13 +1,37 @@
+<style>
+    
+        .content {
+            width: 200px;
+            height: 600px;
+            background-color: white;
+            position:absolute; /*it can be fixed too*/
+            left:0; right:0;
+            top:0; bottom:0;
+            margin:auto;
+            /*this to solve "the content will not be cut when the window is smaller than the content": */
+            max-width:100%;
+            max-height:100%;
+            overflow:auto;
+            vertical-align:middle;
+        }
+        img {
+            width: 200px;
+            height: 200px;
+        }
+        
+    </style> 
+
 <!DOCTYPE html>
     <body>
             <div class="content">
         <span>
             <form action="/changePass" method="POST" align="center">
+            <img src="bootstrap4/unilag-logo.jpg">    
             Name: <input type="text" name="name"><br>
-            Password: <input type="password" placeholder="Password" required="" name= "oldPass"><br>
-            Confirm Password: <input type="password" placeholder="Confirm Password"  required=""> <br>
+            Password: <input type="password" required="" name= "oldPass"><br>
+            Confirm Password: <input type="password" required=""> <br><br>
 
-            <button type="submit">Confirm</button>
+            <button type="submit">Confirm</button><br>
 
              {{if .Login.BadDetail}}
              <p style="color:red;">The detail provided is incorrect</p>

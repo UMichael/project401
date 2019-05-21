@@ -1,5 +1,14 @@
 
 {{define "admin"}}
+
+<style>
+
+     img{
+            width: 200px;
+            height: 200px;
+        }
+
+    </style>
 <!DOCTYPE html>
 <html>
     <!-- meta tags -->
@@ -13,7 +22,9 @@
 </head>
 <body>
     <div class="container">
-
+        <div class="row justify-content-center">
+          <img src="bootstrap4/unilag-logo.jpg">
+        </div>
 
         <div class="row justify-content-start">
             <div class="col-3">
@@ -55,6 +66,8 @@
                                     </tbody>
                                 </table>
                                 <a href="#" class="btn btn-link" id="add">ADD A STUDENT</a>
+                                <br>
+                                <a href="AddCourse.html" class="btn btn-link" id="add">ADD COURSES</a>
                             </div>
                             <input type="submit" value="Submit Enrollment" class="btn btn-link font-weight-bold">
                         </form>
