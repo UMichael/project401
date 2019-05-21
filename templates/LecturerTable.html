@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="description" content="Attendance By FingerPrint">
+    <meta name="autdor" content="Group 8 EEG 401">
+    <meta name="viewport" content="widtd=device-widtd, initial-scale=1, shrink-to-fit=no">  
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="bootstrap4/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="row pt-4 pb-5 mx-0">
+    <div class="col-12">
+
+
+            <div class="table-responsive" id="coursetable">
+                <table class="table table-bordered text-nowrap">
+                    <tdead class="tdead-dark">
+                        <tr class="">
+                            <td>
+                                
+                                <input type="checkbox" onClick="toggle(this)" /> Select All<br/>
+
+                            </td>
+                            <td>Name</td>
+                            <td>Matric</td>
+                            <td>Level</td>
+                            <td>FingerPrint Checked</td>
+                        </tr>
+                    </tdead>    
+                    <tbody id="tablebody">
+                            {{range .}}
+                        <tr>
+                            <td><input type="checkbox" name="Idk"></td>
+                            <td>{{.Name}}</td>
+                            <td>{{.Matric}}</td>
+                            <td>{{.Level}}</td>
+                            <td>{{.FingersChecked}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+    function toggle(source) {
+  checkboxes = document.getElementsByName('Idk');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+
+</script>
+</body>
+
+
+</html>
