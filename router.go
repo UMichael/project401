@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/asdine/storm"
+	"github.com/tealeg/xlsx"
+
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -37,6 +41,7 @@ type StudentDetails struct {
 	Matric         string `storm:"unique"`
 	Level          string `storm:"index"`
 	FingersChecked string
+	Courses        string
 }
 type CourseDetails struct {
 	ID         int `storm:"increment"`
@@ -64,6 +69,9 @@ func init() {
 		Name:     "admin",
 		Password: "admin",
 	})
+	if err != nil {
+		log.Fatalln(err)
+	}
 	StudentDb, err = storm.Open(".StudentDetails")
 	var data []Database
 	StormDb.All(&data)
@@ -78,11 +86,15 @@ func init() {
 var templates = template.Must(template.ParseGlob("templates/*.html"))
 
 func (user *User) HomePage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	_, err := r.Cookie("data")
+	_, err := r.Cookie("admin")
 	if err != nil {
-		http.Redirect(w, r, "/login", 302)
-		return
+		_, err = r.Cookie("lecturer")
+		if err != nil {
+			http.Redirect(w, r, "/login", 302)
+			return
+		}
 	}
+
 	templates = templates.Lookup("home.html")
 	err = templates.Execute(w, user)
 	if err != nil {
@@ -91,7 +103,7 @@ func (user *User) HomePage(w http.ResponseWriter, r *http.Request, _ httprouter.
 
 }
 
-func LoginGet(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (user *User) LoginGet(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	_, err := r.Cookie("logs")
 	if err == nil {
 		http.Redirect(w, r, "/", 302)
@@ -118,14 +130,22 @@ func (user *User) LoginPost(w http.ResponseWriter, r *http.Request, _ httprouter
 		templates.Execute(w, &data)
 		return
 	}
-	cookies := http.Cookie{
-		Name:     "data",
-		Value:    user.Details.Name,
-		Path:     "/",
-		HttpOnly: true,
+	if user.Details.Name != "admin" {
+		http.SetCookie(
+			w,
+			&http.Cookie{
+				Path: "/",
+				Name: "lecturer",
+			})
+	} else {
+		http.SetCookie(
+			w,
+			&http.Cookie{
+				Path: "/",
+				Name: "admin",
+			})
 	}
 	user.Details = NewData
-	http.SetCookie(w, &cookies)
 	http.Redirect(w, r, "/", 302)
 }
 
@@ -143,6 +163,14 @@ func addAdmin(r *http.Request) error {
 }
 
 func (user *User) ChangePassword(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	_, err := r.Cookie("admin")
+	if err != nil {
+		_, err = r.Cookie("lecturer")
+		if err != nil {
+			http.Redirect(w, r, "/login", 302)
+			return
+		}
+	}
 	r.ParseForm()
 	name := r.FormValue("name")
 	oldPass := r.FormValue("oldPass")
@@ -178,35 +206,98 @@ func (user *User) ChangePasswordGet(w http.ResponseWriter, r *http.Request, _ ht
 }
 
 func (user *User) AdminEnroll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	r.ParseForm()
+	if user.Details.IsAdmin != true {
+		http.Redirect(w, r, "/login", 302)
+	}
+	_, err := r.Cookie("admin")
+	if err != nil {
+		_, err = r.Cookie("lecturer")
+		if err != nil {
+			http.Redirect(w, r, "/login", 302)
+			return
+		}
+	}
+	r.ParseMultipartForm((1 << 10) * 24)
+	level := r.FormValue("level")
 	i := 1
 	name := "name"
-	for {
-		var student StudentDetails
-		name = r.FormValue("name_" + strconv.Itoa(i))
-		if name == "" {
-			break
+	file, _, err := r.FormFile("file")
+	switch err {
+	case nil:
+		defer file.Close()
+
+		buf := bytes.NewBuffer(nil)
+		if _, err := io.Copy(buf, file); err != nil {
+			return
 		}
-		student.Name = name
-		student.Matric = r.FormValue("matric_" + strconv.Itoa(i))
-		student.Level = r.FormValue("level_" + strconv.Itoa(i))
-		student.FingersChecked = r.FormValue("finger_" + strconv.Itoa(i))
-		err := StudentDb.Save(&student)
-		if err != nil {
-			fmt.Println("error saving students", err)
+		xlFile, _ := xlsx.OpenBinary(buf.Bytes())
+		var found bool
+		for _, sheet := range xlFile.Sheets {
+			for _, row := range sheet.Rows {
+				var student StudentDetails
+				for _, cell := range row.Cells {
+					text := cell.String()
+					if text != "1" && found != true {
+
+					} else if len(text) > 0 {
+
+						if text[:1] == "1" && len(text) == 9 {
+							student.Matric = text
+							student.Level = level
+						} else if _, err := strconv.Atoi(text); err != nil {
+							student.Name = text
+
+						}
+						//fmt.Println(text)
+						found = true
+					}
+				}
+				if student.Name == "" {
+					continue
+				} else {
+					StudentDb.Save(&student)
+					fmt.Println(student)
+				}
+			}
 		}
-		fmt.Println(student)
-		i++
+
+	case http.ErrMissingFile:
+		for {
+			var student StudentDetails
+			name = r.FormValue("name_" + strconv.Itoa(i))
+			if name == "" {
+				break
+			}
+			student.Name = name
+			student.Matric = r.FormValue("matric_" + strconv.Itoa(i))
+			student.Level = r.FormValue("level_" + strconv.Itoa(i))
+			student.FingersChecked = r.FormValue("finger_" + strconv.Itoa(i))
+			err := StudentDb.Save(&student)
+			if err != nil {
+				fmt.Println("error saving students", err)
+			}
+			fmt.Println(student)
+			i++
+		}
+	default:
+		log.Println(err)
 	}
 	http.Redirect(w, r, "/", 302)
 }
 func (user *User) Students(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	_, err := r.Cookie("admin")
+	if err != nil {
+		_, err = r.Cookie("lecturer")
+		if err != nil {
+			http.Redirect(w, r, "/login", 302)
+			return
+		}
+	}
 	var students []StudentDetails
-	err := StudentDb.AllByIndex("Level", &students)
+	err = StudentDb.AllByIndex("Level", &students)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(students)
 	templates = templates.Lookup("table.html")
 	err = templates.Execute(w, students)
 	if err != nil {
@@ -215,19 +306,31 @@ func (user *User) Students(w http.ResponseWriter, r *http.Request, _ httprouter.
 }
 
 func (user *User) AddCoursePost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	_, err := r.Cookie("admin")
+	if err != nil {
+		_, err = r.Cookie("lecturer")
+		if err != nil {
+			http.Redirect(w, r, "/login", 302)
+			return
+		}
+	}
 	r.ParseForm()
 	if user.Details.IsAdmin != true {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	var course LecturerDetails
-	course.Password = r.FormValue("Pass")
-	course.Name = r.FormValue("name")
-	course.CourseCode = r.FormValue("course")
-	fmt.Println(studentOfferingCourses, lecturerDB.Save(&course))
+
+	StormDb.Save(&Database{
+		IsAdmin:  true,
+		Name:     r.FormValue("course"),
+		Password: r.FormValue("Pass"),
+	})
+
+	//fmt.Println(studentOfferingCourses, lecturerDB.Save(&course))
 	//todo fix error if user has registered
 	http.Redirect(w, r, "/", 302)
 }
+
 func (user *User) AddCourse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if user.Details.IsAdmin != true {
 		http.Redirect(w, r, "/login", 302)
@@ -239,32 +342,32 @@ func (user *User) AddCourse(w http.ResponseWriter, r *http.Request, _ httprouter
 	}
 }
 
-func (user *User) LecturerLoginPost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	r.ParseForm()
-	var lecturer LecturerDetails
-	Code := r.FormValue("code")
-	Password := r.FormValue("Pass")
-	fmt.Println(Code, Password)
-	err := lecturerDB.One("Password", Password, &lecturer)
-	if err != nil || lecturer.CourseCode != Code {
-		user.Login.BadDetail = true
-		fmt.Println(err)
-		http.Redirect(w, r, "/lecturer", 302)
-		return
-	}
-	http.SetCookie(
-		w,
-		&http.Cookie{
-			Path: "/",
-			Name: "lecturer",
-		})
-	http.Redirect(w, r, "/", 302)
-}
+// func (user *User) LecturerLoginPost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+// 	r.ParseForm()
+// 	var lecturer LecturerDetails
+// 	Code := r.FormValue("code")
+// 	Password := r.FormValue("Pass")
+// 	fmt.Println(Code, Password)
+// 	err := StormDb.One("Password", Password, &lecturer)
+// 	if err != nil || lecturer.CourseCode != Code {
+// 		user.Login.BadDetail = true
+// 		fmt.Println(err)
+// 		http.Redirect(w, r, "/lecturer", 302)
+// 		return
+// 	}
+// 	http.SetCookie(
+// 		w,
+// 		&http.Cookie{
+// 			Path: "/",
+// 			Name: "lecturer",
+// 		})
+// 	http.Redirect(w, r, "/", 302)
+// }
 
-func (user *User) LecturerLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	templates = templates.Lookup("lecturerLogin.html")
-	err := templates.Execute(w, user)
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
+// func (user *User) LecturerLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+// 	templates = templates.Lookup("lecturerLogin.html")
+// 	err := templates.Execute(w, user)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+// }

@@ -1,0 +1,94 @@
+
+{{define "Attendance"}}
+
+<style>
+
+     img{
+            width: 200px;
+            height: 200px;
+        }
+
+    </style>
+<!DOCTYPE html>
+<html>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="description" content="Attendance By FingerPrint">
+    <meta name="autdor" content="Group 8 EEG 401">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="bootstrap4/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+          <img src="bootstrap4/unilag-logo.jpg">
+        </div>
+
+        <div class="row justify-content-start">
+            <div class="col-3">
+                <a href="/changePass" class="btn btn-link">Add Admin</a>
+            </div>
+        </div>
+        
+        <div class="row justify-content-end">
+            <div class="col-2">
+                <a class="btn btn-primary" href="/changePass" role="button">Change Password</a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <div class="row pt-4 pb-5 mx-0">
+                    <div class="col-12">
+
+                        <p class="py-0 mb-2 font-weight-bold">STUDENT ENROLLMENT PAGE</p>
+
+                        <form id="/submit" method="POST" action="/enroll" enctype="multipart/form-data">
+                            <div class="table-responsive" id="coursetable">
+                                <table class="table table-bordered text-nowrap">
+                                    <tdead class="tdead-dark">
+                                        <tr class="">
+                                            <td>Matric</td>
+                                            <td>Name</td>
+                                            <td>Level</td>
+                                        </tr>
+                                    </tdead>    
+                                    <tbody id="tablebody">
+                                        {{range .User}}
+                                        <tr>
+                                            <td><input type="text"  class="form-control border-0 m-0" name="matric_1" value={{.User.Matric}}></td>
+                                            <td><input type="text"  class="form-control border-0 m-0" name="name_1" value={{.User.Name}}></td>
+                                            {{range .Attendance}}
+                                            <td><input type="text"  class="form-control border-0 m-0" name="class_1" value={{.Attendance.Class}}></td>
+                                            {{end}}
+                                        </tr>
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                                <br>
+                                <button type="submit" id="submit" class="btn btn-lg btn-primary">Submit</button>
+                            </div>    
+                            <br>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script>
+      var i = 2
+        $('#add').click(function(){
+            
+           var myappend = '<tr><td><input type="text" required="" class="form-control border-0 m-0" name="matric_' + i + '"></td><td><input type="text" required="" class="form-control border-0 m-0" name="name_' + i + '"></td><td><input type="text" required="" class="form-control border-0 m-0" name="level_' + i + '"></td><td><input type="text" required="" class="form-control border-0 m-0" name=finger_' + i + '"" placeholder="NO"></td></tr>'
+            $('#tablebody').append(myappend);
+            i++;
+        })
+    </script>
+</body>
+</html>
+{{end}}

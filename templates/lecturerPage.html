@@ -1,10 +1,8 @@
 <!-- Should I make the dropdown a navbar? -->
 
 
-
+{{define "lecturerPage"}}
 <style>
-
-
 /* Dropdown Button */
 .dropbtn {
   background-color: #4CAF50;
@@ -78,14 +76,15 @@ img{
 
 
 <div class="dropdown">
-  <button onclick="myFunction()" class="dropbtn">Leveks/Years</button>
+  <button onclick="myFunction()" class="dropbtn">Levels/Years</button>
   <div id="myDropdown" class="dropdown-content">
-    <a href="#">100 Level</a>
-    <a href="#">200 Level</a>
-    <a href="#">300 Level</a>
-    <a href="#">400 Level</a>
-    <a href="#">500 Level</a>
+    <a href="/lecturer/100">100 Level</a>
+    <a href="/lecturer/200">200 Level</a>
+    <a href="/lecturer/300">300 Level</a>
+    <a href="/lecturer/400">400 Level</a>
+    <a href="/lecturer/500">500 Level</a>
   </div>
+  
 </div>
 
 
@@ -117,3 +116,4 @@ window.onclick = function(event) {
 </script>
 </body>
 </html>
+{{end}}

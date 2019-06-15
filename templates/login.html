@@ -40,15 +40,15 @@
             <span>
     
                     <img src="bootstrap4/unilag-logo.jpg">
-                    <input placeholder="Enter Username" type="text" name= "User" ><br>
+                    <input placeholder="Enter Username/Course Code" type="text" name= "User" ><br>
                     <br>
                     <input placeholder="Enter Password"  type="password" name="Pass"><br>
                     <br>
                     <button id="request"> Enter </button>
                     <br> 
-                    {{if .Login.BadDetail}}
+                    {{if .BadDetail}}
              <p style="color:red;">The detail provided is incorrect</p>
-             {{else if .Login.Success}}
+             {{else if .Success}}
              <p style="color:lightblue;">Password changed successfully</p>
             {{end}}
             </span>

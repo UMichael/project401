@@ -45,7 +45,7 @@
 
                         <p class="py-0 mb-2 font-weight-bold">STUDENT ENROLLMENT PAGE</p>
 
-                        <form id="addstudent" method="POST" action="/enroll">
+                        <form id="addstudent" method="POST" action="/enroll" enctype="multipart/form-data">
                             <div class="table-responsive" id="coursetable">
                                 <table class="table table-bordered text-nowrap">
                                     <tdead class="tdead-dark">
@@ -58,18 +58,23 @@
                                     </tdead>    
                                     <tbody id="tablebody">
                                         <tr>
-                                            <td><input type="text" required="" class="form-control border-0 m-0" name="matric_1"></td>
-                                            <td><input type="text" required="" class="form-control border-0 m-0" name="name_1"></td>
-                                            <td><input type="text" required="" class="form-control border-0 m-0" name="level_1"></td>
+                                            <td><input type="text"  class="form-control border-0 m-0" name="matric_1"></td>
+                                            <td><input type="text"  class="form-control border-0 m-0" name="name_1"></td>
+                                            <td><input type="text"  class="form-control border-0 m-0" name="level_1"></td>
                                             <td><input type="text"  class="form-control border-0 m-0" name="finger_1" value="NO"></td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <a href="#" class="btn btn-link" id="add">ADD A STUDENT</a>
                                 <br>
-                                <a href="AddCourse.html" class="btn btn-link" id="add">ADD COURSES</a>
+                                <a href="/addcourse" class="btn btn-link" id="add">ADD COURSES</a>
                             </div>
                             <input type="submit" value="Submit Enrollment" class="btn btn-link font-weight-bold">
+                            <br>
+                            <input type="text" name="level" placeholder="level" id="level"></input>
+                            Select xlsx file to upload:
+                            <input type="file" name="file" id="file">
+                            <input type="submit" value="Upload xlsx file" name="submit">
                         </form>
                     </div>
                 </div>
